@@ -1,0 +1,14 @@
+Chebashev poly
+
+y = sum{k}(c_k*T_k(x))
+y' = sum{k}(d_k*T_k(x))
+y'' = sum{k}(f_k*T_k(x))
+
+c_k = sum{j}(y_j*T_k(x_j))
+
+d_{k+1} = (c_k-c_{k+2})/(2*(k+1))
+f_{k+1} = (d_k-d_{k+2})/(2*(k+1))
+
+T_0(x) = 1
+T_1(x) = x
+T_{n+1} = 2*x*T_n(x) - T_{n-1}(x)
