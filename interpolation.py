@@ -15,7 +15,8 @@ def main():
                 utils.msg('write \'2d\' or \'3d\' and file name')
 
         except IndexError:
-            utils.msg('ffff')
+            utils.msg('write \'2d\' or \'3d\' and file name')
+
 
 if __name__ == '__main__':
     main()
