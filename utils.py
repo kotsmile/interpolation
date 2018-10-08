@@ -1,5 +1,8 @@
 from collections import namedtuple
+from mpl_toolkits.mplot3d import Axes3D
+import random
 import math
+import matplotlib.pyplot as plt
 
 poly = lambda x: 1 / x
 expo = math.exp
@@ -30,20 +33,69 @@ def load(file_name, dem=2):
         msg('wrong input file')
 
 
-def float_range(start, end, step):
+def float_range(start, end, steps, rand=False):
+    step = (end - start)/steps
     r = []
-    x = start
-    while x <= end:
-        r.append(x)
-        x += step
+    for i in range(steps):
+        if rand:
+            r.append(random.uniform(start, end))
+        else:
+            r.append(start + i*step)
     return r
 
 
-def generate_2d_data(start, end, func, step):
+def generate_2d_data(y, start, end, steps, rand=False):
     data = []
-    for x in float_range(start, end, step):
+    for x in float_range(start, end, steps, rand=rand):
         try:
-            data.append(p_2d(x, func(x)))
+            data.append(p_2d(x, y(x)))
         except ZeroDivisionError:
             pass
     return data
+
+
+def generate_3d_data(z, start_x, end_x, start_y, end_y, steps, rand=False):
+    data = []
+    xs = float_range(start_x, end_x, steps, rand=rand)
+    random.shuffle(xs)
+    ys = float_range(start_y, end_y, steps, rand=rand)
+    random.shuffle(ys)
+    for x, y in zip(xs, ys):
+        try:
+            data.append(p_3d(x, y, z(x, y)))
+        except ZeroDivisionError:
+            pass
+    return data
+
+
+def plot_2d(data):
+    plt.scatter(unpack_2d(data).x, unpack_2d(data).y)
+    plt.grid(True)
+    plt.show()
+
+
+def plot_3d(data):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(unpack_3d(data).x, unpack_3d(data).y, unpack_3d(data).z)
+    plt.show()
+
+
+def unpack_2d(points):
+    x = []
+    y = []
+    for p in points:
+        x.append(p.x)
+        y.append(p.y)
+    return p_2d(x, y)
+
+
+def unpack_3d(points):
+    x = []
+    y = []
+    z = []
+    for p in points:
+        x.append(p.x)
+        y.append(p.y)
+        z.append(p.z)
+    return p_3d(x, y, z)

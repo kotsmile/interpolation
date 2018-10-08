@@ -3,6 +3,7 @@ import inter_2d as i2d
 
 
 def main():
+    i2d.Interpolation('data/plot')
     while True:
         req = input('> ').split()
         try:
