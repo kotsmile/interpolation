@@ -11,8 +11,8 @@ expo = math.exp
 cos = math.cos
 sin = math.sin
 
-p_2d = namedtuple('Point', ['x', 'y'])
-p_3d = namedtuple('Point', ['x', 'y', 'z'])
+p_2d = namedtuple('P2D', ['x', 'y'])
+p_3d = namedtuple('P3D', ['x', 'y', 'z'])
 
 
 def msg(text):
@@ -35,6 +35,15 @@ def load(file_name, dem=2):
         msg('wrong input file')
 
 
+def save(data, file_name):
+    with open(file_name, 'w') as f:
+        for p in data:
+            if p.__repr__()[1] == '2':
+                f.write(f'{p.x} {p.y}\n')
+            elif p.__repr__()[1] == '3':
+                f.write(f'{p.x} {p.y} {p.z}\n')
+
+
 def float_range(start, end, steps, rand=False):
     step = (end - start)/steps
     r = []
@@ -46,14 +55,20 @@ def float_range(start, end, steps, rand=False):
     return r
 
 
-def generate_2d_data(y, start, end, steps, rand=False):
+def generate_2d_data(y, start, end, steps, rand=False, cheb=False):
     data = []
-    for x in float_range(start, end, steps, rand=rand):
-        try:
-            data.append(p_2d(x, y(x)))
-        except ZeroDivisionError:
-            pass
-    return data
+    if not cheb:
+        for x in float_range(start, end, steps, rand=rand):
+            try:
+                data.append(p_2d(x, y(x)))
+            except ZeroDivisionError:
+                pass
+        return data
+    else:
+        roots = set()
+        while len(roots) < steps:
+            roots.add(random.choice(roots_T(steps)))
+        return [p_2d(x, y(x)) for x in roots]
 
 
 def generate_3d_data(z, start_x, end_x, start_y, end_y, steps, rand=False):
@@ -103,14 +118,22 @@ def unpack_3d(points):
     return p_3d(x, y, z)
 
 
-def generator_T(n):
-    if n == 0:
-        return lambda x: 1
-    elif n == 1:
-        return lambda x: x
-    elif:
+def T(n, x):
+    return math.cos(n*math.acos(x))
 
 
+def roots_T(n):
+    try:
+        return [math.cos(math.pi*(i + 1/2)/n) for i in range(n)]
+    except ZeroDivisionError:
+        return None
 
 
+def get_func(data):
+    d = {p.x: p.y for p in data}
+    return lambda x: d[x], unpack_2d(data).x
+
+
+# save(generate_2d_data(expo, -0.8, 0.8, 5, rand=True), 'data/expo_exp')
+# plot_2d(load('data/expo_exp'))
 
