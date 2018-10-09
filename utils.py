@@ -65,11 +65,15 @@ def generate_2d_data(y, start, end, steps, rand=False, cheb=False):
                 pass
         return data
     else:
-        roots = set()
-        while len(roots) < steps:
-            roots.add(random.choice(roots_T(steps)))
-        return [p_2d(x, y(x)) for x in roots]
+        if not random:
+            roots = set()
+            while len(roots) < steps:
+                roots.add(random.choice(roots_T(steps)))
+        else:
+            n = random.randint(steps*2, 10000)
+            roots = random.choices(roots_T(n), k=steps)
 
+        return [p_2d(x, y(x)) for x in roots]
 
 def generate_3d_data(z, start_x, end_x, start_y, end_y, steps, rand=False):
     data = []
@@ -134,6 +138,5 @@ def get_func(data):
     return lambda x: d[x], unpack_2d(data).x
 
 
-# save(generate_2d_data(expo, -0.8, 0.8, 5, rand=True), 'data/expo_exp')
-# plot_2d(load('data/expo_exp'))
+
 

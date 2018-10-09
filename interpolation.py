@@ -1,9 +1,11 @@
-import utils
+from utils import *
 import inter_2d as i2d
 
 
 def main():
-    i2d.Interpolation('data/expo_exp')
+    save(generate_2d_data(cos, -0.8, 0.8, 50, rand=True, cheb=True), 'data/sin_exp')
+    plot_2d(load('data/sin_exp'))
+    i2d.Interpolation('data/sin_exp')
     while True:
         req = input('> ').split()
         try:
@@ -13,10 +15,10 @@ def main():
             elif req[0] == '3d':
                 file_name = req[1]
             else:
-                utils.msg('write \'2d\' or \'3d\' and file name')
+                msg('write \'2d\' or \'3d\' and file name')
 
         except IndexError:
-            utils.msg('write \'2d\' or \'3d\' and file name')
+            msg('write \'2d\' or \'3d\' and file name')
 
 
 if __name__ == '__main__':
