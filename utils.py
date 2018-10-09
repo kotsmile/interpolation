@@ -3,6 +3,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import random
 import math
 import matplotlib.pyplot as plt
+import time
+
 
 poly = lambda x: 1 / x
 expo = math.exp
@@ -99,3 +101,16 @@ def unpack_3d(points):
         y.append(p.y)
         z.append(p.z)
     return p_3d(x, y, z)
+
+
+def generator_T(n):
+    if n == 0:
+        return lambda x: 1
+    elif n == 1:
+        return lambda x: x
+    elif:
+
+
+
+
+
