@@ -7,7 +7,10 @@ def kran(a, b):
     return 0
 
 
-class Interpolation2D:
+class Interpolation3D:
+
+
+    # TRANSFORM TO 3-D lets go!!!!!
     def __init__(self, file_name):
         self.data = utils.load(file_name, dem=2)
         print(self.data)

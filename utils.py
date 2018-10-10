@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import time
 
 
-poly = lambda x: 1 / x
+poly = lambda x: 4*x**3-2*x**2+x
 expo = math.exp
 cos = math.cos
 sin = math.sin
@@ -65,15 +65,16 @@ def generate_2d_data(y, start, end, steps, rand=False, cheb=False):
                 pass
         return data
     else:
-        if not random:
-            roots = set()
-            while len(roots) < steps:
-                roots.add(random.choice(roots_T(steps)))
+        if not rand:
+            roots = roots_T(steps)
         else:
-            n = random.randint(steps*2, 10000)
+            n = random.randint(steps, 100)
             roots = random.choices(roots_T(n), k=steps)
+            print(n)
+
 
         return [p_2d(x, y(x)) for x in roots]
+
 
 def generate_3d_data(z, start_x, end_x, start_y, end_y, steps, rand=False):
     data = []
@@ -133,10 +134,8 @@ def roots_T(n):
         return None
 
 
-def get_func(data):
-    d = {p.x: p.y for p in data}
+def get_func(data, err=10000000000):
+    d = {int(p.x*err)*err: p.y for p in data}
     return lambda x: d[x], unpack_2d(data).x
-
-
 
 
