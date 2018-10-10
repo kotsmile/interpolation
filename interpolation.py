@@ -3,7 +3,7 @@ import inter_2d as i2d
 
 
 def main():
-    save(generate_2d_data(poly, -0.8, 0.8, 4, rand=False, cheb=True), 'data/sin_exp')
+    save(generate_2d_data(poly, -0.8, 0.8, 20, rand=True, cheb=True), 'data/sin_exp')
     plot_2d(load('data/sin_exp'))
     i2d.Interpolation2D('data/sin_exp')
     while True:

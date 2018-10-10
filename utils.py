@@ -69,7 +69,10 @@ def generate_2d_data(y, start, end, steps, rand=False, cheb=False):
             roots = roots_T(steps)
         else:
             n = random.randint(steps, 100)
-            roots = random.choices(roots_T(n), k=steps)
+            pick = [i for i in range(n)]
+            random.shuffle(pick)
+            root = roots_T(n)
+            roots = [root[i] for i in pick[:steps]]
             print(n)
 
 
@@ -135,7 +138,7 @@ def roots_T(n):
 
 
 def get_func(data, err=10000000000):
-    d = {int(p.x*err)*err: p.y for p in data}
+    d = {int(p.x*err)/err: p.y for p in data}
     return lambda x: d[x], unpack_2d(data).x
 
 
