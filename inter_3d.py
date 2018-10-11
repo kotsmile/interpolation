@@ -13,11 +13,9 @@ class Interpolation3D:
         self.max_x = max(utils.unpack_3d(self.data).x)
         self.min_y = min(utils.unpack_3d(self.data).y)
         self.max_y = max(utils.unpack_3d(self.data).y)
-        self.datas = []
-        self.i2ds = []
-        self.prep()
 
-    def prep(self):
+    def calculate(self, x, y):
+
         datas = []
         d_y = []
         self.data.append(utils.p_3d('1', 1, 1))
@@ -31,20 +29,12 @@ class Interpolation3D:
             else:
                 d_y.append(utils.p_2d(d.y, d.z))
 
-        i2ds = []
-        for d in datas:
-            idd = inter_2d.Interpolation2D(data=d)
-            i2ds.append(idd)
-
-        self.i2ds = i2ds
         self.data.pop()
-        self.datas = datas
-
-    def calculate(self, x, y):
 
         zs = []
-        for i2d in self.i2ds:
-            yr = i2d.calculate(y)
+        for d in datas:
+            i = inter_2d.Interpolation2D(data=d)
+            yr = i.calculate(y)
             zs.append(yr)
 
         xs = list(set(utils.unpack_3d(self.data).x))
@@ -60,8 +50,8 @@ class Interpolation3D:
 
     def plot(self):
         data = []
-        for x in utils.float_range(self.min_x, self.max_x, 20):
-            for y in utils.float_range(self.min_y, self.max_y, 20):
+        for x in utils.float_range(self.min_x, self.max_x, 50):
+            for y in utils.float_range(self.min_y, self.max_y, 50):
                 data.append(utils.p_3d(x, y, self.calculate(x, y)))
 
         utils.plot_3d(data)

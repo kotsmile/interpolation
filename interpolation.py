@@ -27,7 +27,7 @@ if __name__ == '__main__':
     # intr = i2d.Interpolation2D('data/test')
     # intr.plot()
     f = 'data/3d_test'
-    save(generate_3d_data(lambda x, y: x**3+y**2, 15, -5, 5, -5, 5, rand=True), f)
+    save(generate_3d_data(lambda x, y: sin(x+y), 10, -2, 2, -2, 2, rand=False), f)
     plot_3d(load(f, dem=3))
     g = i3d.Interpolation3D(f)
     g.plot()
