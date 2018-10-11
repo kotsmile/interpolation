@@ -21,11 +21,13 @@ def main():
 
 
 if __name__ == '__main__':
-    # save(generate_2d_data(lambda y: y**9-y**2, 100, rand=False, cheb=True), 'data/test_exp')
+    # save(generate_2d_data(lambda x: x**2, 30, -5, 5, rand=True), 'data/test')
     #
-    # plot_2d(load('data/test_exp'))
-    # i2d.Interpolation2D('data/test_exp', err=1000000)
+    # plot_2d(load('data/test'))
+    # intr = i2d.Interpolation2D('data/test')
+    # intr.plot()
     f = 'data/3d_test'
-    save(generate_3d_data(lambda x,y: sin(x+y), 10, cheb=True), f)
+    save(generate_3d_data(lambda x, y: x**3+y**2, 15, -5, 5, -5, 5, rand=True), f)
     plot_3d(load(f, dem=3))
-    i3d.Interpolation3D(f, err=10000)
+    g = i3d.Interpolation3D(f)
+    g.plot()

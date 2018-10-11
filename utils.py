@@ -55,50 +55,27 @@ def float_range(start, end, steps, rand=False):
     return r
 
 
-def generate_2d_data(y, steps, start=0, end=0, rand=False, cheb=False):
+def generate_2d_data(y, steps, start=0, end=0, rand=False):
     data = []
-    if not cheb:
-        for x in float_range(start, end, steps, rand=rand):
-            try:
-                data.append(p_2d(x, y(x)))
-            except ZeroDivisionError:
-                pass
-        return data
-    else:
-        if not rand:
-            roots = roots_T(steps)
-        else:
-            n = random.randint(steps, 100)
-            pick = [i for i in range(n)]
-            random.shuffle(pick)
-            root = roots_T(n)
-            roots = [root[i] for i in pick[:steps]]
-            print('Order of Chebishev polynomial: ', n)
-
-        return [p_2d(x, y(x)) for x in roots]
+    for x in float_range(start, end, steps, rand=rand):
+        try:
+            data.append(p_2d(x, y(x)))
+        except ZeroDivisionError:
+            pass
+    return data
 
 
-def generate_3d_data(z, steps, start_x=0, end_x=0, start_y=0, end_y=0, rand=False, cheb=False):
+def generate_3d_data(z, steps, start_x=0, end_x=0, start_y=0, end_y=0, rand=False):
     data = []
-    if not cheb:
-        xs = float_range(start_x, end_x, steps, rand=rand)
-        random.shuffle(xs)
+    xs = float_range(start_x, end_x, steps, rand=rand)
+    for x in xs:
         ys = float_range(start_y, end_y, steps, rand=rand)
         random.shuffle(ys)
-        for x, y in zip(xs, ys):
+        for y in ys:
             try:
                 data.append(p_3d(x, y, z(x, y)))
             except ZeroDivisionError:
                 pass
-    else:
-        xs = roots_T(steps)
-        ys = roots_T(steps)
-        for y in ys:
-            for x in xs:
-                try:
-                    data.append(p_3d(x, y, z(x, y)))
-                except ZeroDivisionError:
-                    pass
 
     return data
 
@@ -106,6 +83,8 @@ def generate_3d_data(z, steps, start_x=0, end_x=0, start_y=0, end_y=0, rand=Fals
 def plot_2d(data):
     plt.scatter(unpack_2d(data).x, unpack_2d(data).y)
     plt.grid(True)
+    plt.xlabel('x')
+    plt.ylabel('y')
     plt.show()
 
 
@@ -113,6 +92,8 @@ def plot_3d(data):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(unpack_3d(data).x, unpack_3d(data).y, unpack_3d(data).z)
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
     plt.show()
 
 
@@ -136,19 +117,12 @@ def unpack_3d(points):
     return p_3d(x, y, z)
 
 
-def T(n, x):
-    return math.cos(n*math.acos(x))
-
-
-def roots_T(n):
-    try:
-        return [math.cos(math.pi*(i + 1/2)/n) for i in range(n)]
-    except ZeroDivisionError:
-        return None
-
-
 def get_func(data, err=10000000000):
     d = {int(p.x*err)/err: p.y for p in data}
     return lambda x: d[x], unpack_2d(data).x
+
+
+if __name__ == '__main__':
+    plot_3d(load('data/3d_test', dem=3))
 
 

@@ -1,68 +1,67 @@
 import utils
 import math
-
-
-def kran(a, b):
-    if a == b:
-        return 1
-    return 0
+import inter_2d
 
 
 class Interpolation3D:
 
-    def __init__(self, file_name, err):
+    def __init__(self, file_name):
         self.data = utils.load(file_name, dem=3)
-        self.err = err
         self.z = None
         self.n = 0
         self.min_x = min(utils.unpack_3d(self.data).x)
         self.max_x = max(utils.unpack_3d(self.data).x)
         self.min_y = min(utils.unpack_3d(self.data).y)
         self.max_y = max(utils.unpack_3d(self.data).y)
-        self.n = int(math.sqrt(len(self.data)))
-        print(self.n)
-        self.calculate()
-        self.plot()
+        self.datas = []
+        self.i2ds = []
+        self.prep()
 
-    def understand(self):
-        pass
+    def prep(self):
+        datas = []
+        d_y = []
+        self.data.append(utils.p_3d('1', 1, 1))
 
-    def calculate(self):
-        c_xs = [[] for i in range(self.n)]
-        for k in range(self.n):
-            i = 0
-            print(f'{int(i*1000/self.n)/10}%')
-            for j in range(self.n):
-                c_j_i = 0
-                for p in self.data[i*self.n + j: i*self.n + j*2]:
-                    print(';')
-                    c_j_i += utils.T(j, p.x)*p.z/((1 + kran(j, 0)) * self.n / 2)
-                c_xs[i].append(c_j_i)
-                print('.')
+        x_0 = self.data[0].x
+        for d in self.data:
+            if d.x != x_0:
+                datas.append(d_y)
+                x_0 = d.x
+                d_y = [utils.p_2d(d.y, d.z)]
+            else:
+                d_y.append(utils.p_2d(d.y, d.z))
 
-        def z_0(x, i, n):
-            res = 0
-            for k in range(n):
-                a = c_xs[i][k]*utils.T(k, x)
-                res += a
-            return res
+        i2ds = []
+        for d in datas:
+            idd = inter_2d.Interpolation2D(data=d)
+            i2ds.append(idd)
 
-        self.z = z_0
+        self.i2ds = i2ds
+        self.data.pop()
+        self.datas = datas
+
+    def calculate(self, x, y):
+
+        zs = []
+        for i2d in self.i2ds:
+            yr = i2d.calculate(y)
+            zs.append(yr)
+
+        xs = list(set(utils.unpack_3d(self.data).x))
+        xs.sort()
+
+        last_data = []
+        for x_, z_ in zip(xs, zs):
+            last_data.append(utils.p_2d(x_, z_))
+
+        inter = inter_2d.Interpolation2D(data=last_data)
+        z = inter.calculate(x)
+        return z
 
     def plot(self):
-
         data = []
-        for _ in range(self.n):
-            i = 0
-            data_i = []
-            for x in utils.float_range(self.min_x, self.max_x, 50):
-                data_i.append(utils.p_3d(x, utils.unpack_3d(self.data).y[i*self.n], self.z(x, i, self.n)))
-
-            data += data_i
+        for x in utils.float_range(self.min_x, self.max_x, 20):
+            for y in utils.float_range(self.min_y, self.max_y, 20):
+                data.append(utils.p_3d(x, y, self.calculate(x, y)))
 
         utils.plot_3d(data)
-        # data = []
-        # for x in utils.float_range(self.min_x, self.max_x, 1000):
-        #
-        #     data.append(utils.p_2d(x, self.z_fs[0](x, self.n)))
-        # utils.plot_2d(data)
