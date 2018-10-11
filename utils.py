@@ -55,7 +55,7 @@ def float_range(start, end, steps, rand=False):
     return r
 
 
-def generate_2d_data(y, start, end, steps, rand=False, cheb=False):
+def generate_2d_data(y, steps, start=0, end=0, rand=False, cheb=False):
     data = []
     if not cheb:
         for x in float_range(start, end, steps, rand=rand):
@@ -73,23 +73,33 @@ def generate_2d_data(y, start, end, steps, rand=False, cheb=False):
             random.shuffle(pick)
             root = roots_T(n)
             roots = [root[i] for i in pick[:steps]]
-            print(n)
-
+            print('Order of Chebishev polynomial: ', n)
 
         return [p_2d(x, y(x)) for x in roots]
 
 
-def generate_3d_data(z, start_x, end_x, start_y, end_y, steps, rand=False):
+def generate_3d_data(z, steps, start_x=0, end_x=0, start_y=0, end_y=0, rand=False, cheb=False):
     data = []
-    xs = float_range(start_x, end_x, steps, rand=rand)
-    random.shuffle(xs)
-    ys = float_range(start_y, end_y, steps, rand=rand)
-    random.shuffle(ys)
-    for x, y in zip(xs, ys):
-        try:
-            data.append(p_3d(x, y, z(x, y)))
-        except ZeroDivisionError:
-            pass
+    if not cheb:
+        xs = float_range(start_x, end_x, steps, rand=rand)
+        random.shuffle(xs)
+        ys = float_range(start_y, end_y, steps, rand=rand)
+        random.shuffle(ys)
+        for x, y in zip(xs, ys):
+            try:
+                data.append(p_3d(x, y, z(x, y)))
+            except ZeroDivisionError:
+                pass
+    else:
+        xs = roots_T(steps)
+        ys = roots_T(steps)
+        for y in ys:
+            for x in xs:
+                try:
+                    data.append(p_3d(x, y, z(x, y)))
+                except ZeroDivisionError:
+                    pass
+
     return data
 
 

@@ -8,7 +8,8 @@ def kran(a, b):
 
 
 class Interpolation2D:
-    def __init__(self, file_name):
+    def __init__(self, file_name, err):
+        self.err = err
         self.data = utils.load(file_name, dem=2)
         self.y = None
         self.n = len(self.data)
@@ -19,13 +20,12 @@ class Interpolation2D:
         self.plot()
 
     def understand(self):
-        err = 10
-        data_x_ap = list(map(lambda x: int(x*err)/err, utils.unpack_2d(self.data).x))
+        data_x_ap = list(map(lambda x: int(x*self.err)/self.err, utils.unpack_2d(self.data).x))
         max_same = 0
         new_xs = []
         best_n = 0
         for i in range(self.n + 1):
-            roots_ap = list(map(lambda x: int(x*err)/err, utils.roots_T(i)))
+            roots_ap = list(map(lambda x: int(x*self.err)/self.err, utils.roots_T(i)))
             same = len(list(set(data_x_ap) & set(roots_ap)))
             if max_same < same:
                 max_same = same
@@ -36,7 +36,7 @@ class Interpolation2D:
 
         self.n = best_n
         print(best_n)
-        f = utils.get_func(self.data, err=err)[0]
+        f = utils.get_func(self.data, err=self.err)[0]
         self.data = [utils.p_2d(x, f(x)) for x in new_xs]
 
     def calculate(self):

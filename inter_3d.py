@@ -1,4 +1,5 @@
 import utils
+import math
 
 
 def kran(a, b):
@@ -9,57 +10,59 @@ def kran(a, b):
 
 class Interpolation3D:
 
-
-    # TRANSFORM TO 3-D lets go!!!!!
-    def __init__(self, file_name):
-        self.data = utils.load(file_name, dem=2)
-        print(self.data)
-        self.y = None
+    def __init__(self, file_name, err):
+        self.data = utils.load(file_name, dem=3)
+        self.err = err
+        self.z = None
         self.n = 0
-        self.min = min(utils.unpack_2d(self.data).x)
-        self.max = max(utils.unpack_2d(self.data).x)
-        self.understand()
+        self.min_x = min(utils.unpack_3d(self.data).x)
+        self.max_x = max(utils.unpack_3d(self.data).x)
+        self.min_y = min(utils.unpack_3d(self.data).y)
+        self.max_y = max(utils.unpack_3d(self.data).y)
+        self.n = int(math.sqrt(len(self.data)))
+        print(self.n)
         self.calculate()
         self.plot()
 
     def understand(self):
-        err = 100000
-        data_x_ap = list(map(lambda x: int(x*err)/err, utils.unpack_2d(self.data).x))
-        max_same = 0
-        new_xs = []
-        best_n = 0
-        for i in range(1000):
-            roots_ap = list(map(lambda x: int(x*err)/err, utils.roots_T(i)))
-            same = len(list(set(data_x_ap) & set(roots_ap)))
-            if max_same < same:
-                max_same = same
-                best_n = i
-                new_xs = list(set(data_x_ap) & set(roots_ap))
-                if same == len(self.data):
-                    break
-
-        self.n = best_n
-        f = utils.get_func(self.data, err=err)[0]
-        self.data = [utils.p_2d(x, f(x)) for x in new_xs]
+        pass
 
     def calculate(self):
-        c = []
+        c_xs = [[] for i in range(self.n)]
         for k in range(self.n):
-            c_k = 0
-            for p in self.data:
-                c_k += utils.T(k, p.x)*p.y/((1 + kran(k, 0)) * self.n / 2)
-            c.append(c_k)
+            i = 0
+            print(f'{int(i*1000/self.n)/10}%')
+            for j in range(self.n):
+                c_j_i = 0
+                for p in self.data[i*self.n + j: i*self.n + j*2]:
+                    print(';')
+                    c_j_i += utils.T(j, p.x)*p.z/((1 + kran(j, 0)) * self.n / 2)
+                c_xs[i].append(c_j_i)
+                print('.')
 
-        def y_0(x, n):
+        def z_0(x, i, n):
             res = 0
-            for i in range(n):
-                res += c[i]*utils.T(i, x)
+            for k in range(n):
+                a = c_xs[i][k]*utils.T(k, x)
+                res += a
             return res
 
-        self.y = y_0
+        self.z = z_0
 
     def plot(self):
+
         data = []
-        for x in utils.float_range(self.min, self.max, 10000):
-            data.append(utils.p_2d(x, self.y(x, self.n)))
-        utils.plot_2d(data)
+        for _ in range(self.n):
+            i = 0
+            data_i = []
+            for x in utils.float_range(self.min_x, self.max_x, 50):
+                data_i.append(utils.p_3d(x, utils.unpack_3d(self.data).y[i*self.n], self.z(x, i, self.n)))
+
+            data += data_i
+
+        utils.plot_3d(data)
+        # data = []
+        # for x in utils.float_range(self.min_x, self.max_x, 1000):
+        #
+        #     data.append(utils.p_2d(x, self.z_fs[0](x, self.n)))
+        # utils.plot_2d(data)
