@@ -5,14 +5,20 @@ import inter_2d
 
 class Interpolation3D:
 
-    def __init__(self, file_name):
-        self.data = utils.load(file_name, dem=3)
+    def __init__(self, file_name=None, data=None, real_data=None):
+        if file_name:
+            self.data = utils.load(file_name, dem=3)
+        if data:
+            self.data = data
+        if real_data:
+            self.real_data = real_data
         self.z = None
         self.n = 0
         self.min_x = min(utils.unpack_3d(self.data).x)
         self.max_x = max(utils.unpack_3d(self.data).x)
         self.min_y = min(utils.unpack_3d(self.data).y)
         self.max_y = max(utils.unpack_3d(self.data).y)
+
 
     def calculate(self, x, y):
 
@@ -50,8 +56,12 @@ class Interpolation3D:
 
     def plot(self):
         data = []
-        for x in utils.float_range(self.min_x, self.max_x, 50):
-            for y in utils.float_range(self.min_y, self.max_y, 50):
+        for x in utils.float_range(self.min_x, self.max_x, 30):
+            for y in utils.float_range(self.min_y, self.max_y, 30):
                 data.append(utils.p_3d(x, y, self.calculate(x, y)))
 
-        utils.plot_3d(data)
+        error_data = []
+        for r in self.real_data:
+            error_data.append(utils.p_3d(r.x, r.y, self.calculate(r.x, r.y)-r.z))
+
+        utils.plot_3d(data, data_in=self.data, data_sub=error_data)

@@ -2,6 +2,11 @@ from utils import *
 import inter_2d as i2d
 import inter_3d as i3d
 
+poly = lambda x, y: x**3+4*y**2
+ratio = lambda x, y: (x**2+y**2)/(x*(x+1))
+expo = lambda x, y: math.exp(x+y) + 1
+harm = lambda x, y: math.cos(2*x-3*y)
+
 
 def main():
 
@@ -21,13 +26,8 @@ def main():
 
 
 if __name__ == '__main__':
-    # save(generate_2d_data(lambda x: x**2, 30, -5, 5, rand=True), 'data/test')
-    #
-    # plot_2d(load('data/test'))
-    # intr = i2d.Interpolation2D('data/test')
-    # intr.plot()
-    f = 'data/3d_test'
-    save(generate_3d_data(lambda x, y: sin(x+y), 10, -2, 2, -2, 2, rand=False), f)
-    plot_3d(load(f, dem=3))
-    g = i3d.Interpolation3D(f)
-    g.plot()
+
+    interpolate(poly)
+    interpolate(ratio)
+    interpolate(expo)
+    interpolate(harm)

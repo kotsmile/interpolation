@@ -4,16 +4,26 @@ import random
 import math
 import matplotlib.pyplot as plt
 import time
+from inter_3d import Interpolation3D
 
-
-poly = lambda x: 4*x**3-2*x**2+x
-expo = math.exp
-cos = math.cos
-sin = math.sin
 
 p_2d = namedtuple('P2D', ['x', 'y'])
 p_3d = namedtuple('P3D', ['x', 'y', 'z'])
 
+
+def interpolate(func):
+
+    data1 = generate_3d_data(func, 10, -1, 1, -1, 1, rand=False)
+    s_data1 = generate_3d_data(func, 30, -0.9, 0.9, -0.9, 0.9, rand=False)
+
+    data2 = generate_3d_data(func, 5, 0, 2, 0, 2, rand=False)
+    s_data2 = generate_3d_data(func, 30, 0.1, 1.9, 0.1, 1.9, rand=False)
+
+    i1 = Interpolation3D(data=data1, real_data=s_data1)
+    i1.plot()
+
+    i2 = Interpolation3D(data=data2, real_data=s_data2)
+    i2.plot()
 
 def msg(text):
     print('=' * (len(text) + 4) + f'\n  {text}\n' + '=' * (len(text) + 4))
@@ -88,12 +98,29 @@ def plot_2d(data):
     plt.show()
 
 
-def plot_3d(data):
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+def plot_3d(data, data_in=None, data_sub=None):
+
+    if data_sub:
+        fig = plt.figure(figsize=plt.figaspect(0.5))
+        ax = fig.add_subplot(1, 2, 1, projection='3d')
+    else:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+
     ax.scatter(unpack_3d(data).x, unpack_3d(data).y, unpack_3d(data).z)
     ax.set_xlabel('x')
     ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    if data_sub:
+        ax2 = fig.add_subplot(1, 2, 2, projection='3d')
+        ax2.scatter(unpack_3d(data_sub).x, unpack_3d(data_sub).y, unpack_3d(data_sub).z)
+        ax2.set_xlabel('x')
+        ax2.set_ylabel('y')
+
+    if data_in:
+        ax.scatter(unpack_3d(data_in).x, unpack_3d(data_in).y, unpack_3d(data_in).z, c='r', marker='o')
+
+
     plt.show()
 
 
